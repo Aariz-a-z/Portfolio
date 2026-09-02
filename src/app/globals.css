@@ -1,0 +1,434 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Colour tokens — V3.
+
+   Every value is verified by scripts/check-contrast.mjs before any UI is built.
+
+   THE ACCENT IS WARM ON PURPOSE.
+
+   V2 used a periwinkle taken from a cool rim light, and the primary button used
+   a saturated default blue that did not match it — three blues on one page, none
+   of them owned. The V3 accent is the colour of the key light falling on paper
+   in the hero render, so type and image share one light source rather than
+   merely coordinating. It is also the one hue that almost no AI portfolio uses:
+   the field is uniformly blue and violet, and a desk-lamp amber reads as
+   editorial rather than as a template.
+
+   DARK IS THE BASE, AND IT DOES NOT FOLLOW THE OPERATING SYSTEM.
+
+   V2 locked the hero dark while the rest of the page followed the reader, which
+   produced a hard seam at the hero boundary — a cinematic plate above, a stark
+   white document below.
+
+   There is deliberately no `prefers-color-scheme: light` rule. The hero frames
+   are lit for a dark studio with that background baked in, so on a light-OS
+   machine an automatic switch would restore the seam for the majority of
+   visitors. Dark is the identity of this site rather than a preference it
+   responds to. Light remains fully supported and fully verified, but it is an
+   explicit choice made with the toggle, which sets `data-theme="light"`.
+
+   Two border tokens on purpose. `--border` is decorative separation and is
+   intentionally low contrast — a section is identified by its content and
+   rhythm, not its outline. `--border-strong` is every interactive boundary and
+   clears 3:1 on all three surfaces.
+--------------------------------------------------------------------------- */
+
+:root {
+  --bg: #0c0c0d;
+  --surface: #141416;
+  --surface-raised: #1c1c1f;
+  --border: #26262a;
+  --border-strong: #6b6b74;
+  --text: #ede9e1;
+  --text-secondary: #aeaaa1;
+  --text-muted: #928e86;
+  --accent: #e0a96d;
+  --accent-quiet: #2a2118;
+  --status-ongoing: #e0a458;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.28);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #fbfaf8;
+  --surface: #f2f0ec;
+  --surface-raised: #e9e6e0;
+  --border: #ddd9d2;
+  --border-strong: #86817a;
+  --text: #16161a;
+  --text-secondary: #4a4842;
+  --text-muted: #5d5a55;
+  --accent: #8a4f12;
+  --accent-quiet: #f7ede0;
+  --status-ongoing: #7a4d0c;
+  --shadow-card: 0 1px 2px rgb(16 20 26 / 0.08);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-quiet: var(--accent-quiet);
+  --color-status-ongoing: var(--status-ongoing);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+  /* Display face. Used for roughly six strings on the whole site: the hero
+     name, the section headings and the flagship title. It is punctuation, not
+     a body face — which is why one weight, latin only, is enough. */
+  --font-display: var(--font-display), ui-serif, Georgia, 'Times New Roman', serif;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+* {
+  min-width: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Anchored sections must not land under the sticky header. */
+  scroll-padding-top: 5.5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* A visible, high-contrast focus ring on every interactive element. */
+:where(a, button, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme toggle icons.
+
+   Which icon shows is a function of the active theme, and the active theme is
+   already expressed in CSS. Deciding it here keeps the button correct through
+   server rendering and hydration, and keeps it correct if the system preference
+   changes while the page is open.
+--------------------------------------------------------------------------- */
+
+.theme-icon-sun {
+  display: block;
+}
+.theme-icon-moon {
+  display: none;
+}
+
+:root[data-theme='dark'] .theme-icon-sun {
+  display: block;
+}
+:root[data-theme='dark'] .theme-icon-moon {
+  display: none;
+}
+:root[data-theme='light'] .theme-icon-sun {
+  display: none;
+}
+:root[data-theme='light'] .theme-icon-moon {
+  display: block;
+}
+
+/* ---------------------------------------------------------------------------
+   Type scale — V3.
+
+   Three tiers, and the tier is chosen by role rather than by size.
+
+   `.t-display` is the serif, and it appears about six times on the whole site:
+   the hero name, each section heading, the flagship title. It carries no weight
+   above 400 because Instrument Serif at 400 is already the heaviest thing on
+   the page at 104px — adding weight to a display serif at that size makes it
+   muddy, not stronger.
+
+   `.t-mono` replaces the old `.t-micro` for anything that is machine-adjacent:
+   eyebrows, section indices, stack entries, metrics, stage labels. The visual
+   argument of the whole redesign is document typography on one side and
+   computational typography on the other, so that split has to be legible in the
+   type system itself and not just in the render.
+
+   Explicit values per breakpoint rather than a scaled ramp: a display serif and
+   a UI grotesque do not want the same rate of growth.
+--------------------------------------------------------------------------- */
+
+.t-display,
+.t-section {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.t-h1,
+.t-h2,
+.t-h3 {
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+/* The hero name. */
+.t-display {
+  font-size: 3.25rem;
+  line-height: 0.94;
+}
+
+/* Section headings and the flagship title. */
+.t-section {
+  font-size: 2.125rem;
+  line-height: 1.02;
+}
+
+.t-h1 {
+  font-size: 1.75rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.t-h2 {
+  font-size: 1.375rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.t-h3 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* The hero positioning statement. Sans, not serif: it has to stay plain. */
+.t-lead {
+  font-size: 1.375rem;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.t-body-lg {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+.t-body {
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.t-small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Computational typography. */
+.t-mono,
+.t-micro {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+/* Large mono, for verified figures. */
+.t-figure {
+  font-family: var(--font-mono);
+  font-size: 1.75rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 640px) {
+  .t-display {
+    font-size: 5rem;
+  }
+  .t-section {
+    font-size: 3rem;
+  }
+  .t-h1 {
+    font-size: 2.25rem;
+  }
+  .t-h2 {
+    font-size: 1.625rem;
+  }
+  .t-h3 {
+    font-size: 1.25rem;
+  }
+  .t-lead {
+    font-size: 1.75rem;
+  }
+  .t-body-lg {
+    font-size: 1.125rem;
+    line-height: 1.65;
+  }
+  .t-figure {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .t-display {
+    font-size: 6.5rem;
+  }
+  .t-section {
+    font-size: 3.75rem;
+  }
+  .t-lead {
+    font-size: 2rem;
+  }
+  .t-mono,
+  .t-micro {
+    font-size: 0.8125rem;
+  }
+}
+
+.measure {
+  max-width: 68ch;
+}
+
+/* ---------------------------------------------------------------------------
+   Motion — one entrance per section, and a hard stop under reduced motion.
+--------------------------------------------------------------------------- */
+
+.enter {
+  opacity: 1;
+}
+
+.enter[data-animate='pending'] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.enter[data-animate='in'] {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 250ms cubic-bezier(0.2, 0, 0, 1),
+    transform 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Never leave content mid-entrance when motion is switched off. */
+  .enter[data-animate='pending'] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The hero plate.
+
+   In V2 this block redefined the whole palette, because the site followed the
+   reader's theme and the hero had to stay dark against it. Dark is now the base
+   for the entire page, so under the default theme this inherits and changes
+   nothing.
+
+   It is kept for the one case that still needs it: a reader who has explicitly
+   chosen light. The frames are lit for a dark studio with that background baked
+   in, so the hero holds the dark palette locally rather than shipping a second
+   render. Redefining tokens rather than hard-coding colours keeps every control
+   inside — buttons, links, focus rings — at the contrast ratios already
+   verified for dark.
+--------------------------------------------------------------------------- */
+
+.hero-cinema {
+  --bg: #0c0c0d;
+  --surface: #141416;
+  --surface-raised: #1c1c1f;
+  --border: #26262a;
+  --border-strong: #6b6b74;
+  --text: #ede9e1;
+  --text-secondary: #aeaaa1;
+  --text-muted: #928e86;
+  --accent: #e0a96d;
+  --accent-quiet: #2a2118;
+  background-color: var(--bg);
+  color: var(--text);
+  color-scheme: dark;
+}
+
+/* ---------------------------------------------------------------------------
+   The stage's own light, costing nothing.
+
+   A gradient approximating where the key light falls in the rendered frames, so
+   the hero is a composed dark plate from the very first paint — before the
+   still image has been requested, and permanently for anyone whose connection
+   or preferences mean it never will be.
+
+   Warm, because the key in the render is a 3200K desk lamp. A cool gradient
+   under a warm render was one of the things that made V2 read as two images.
+--------------------------------------------------------------------------- */
+
+.hero-stage {
+  background-color: var(--bg);
+  background-image: radial-gradient(
+    120% 90% at 72% 26%,
+    rgb(224 169 109 / 0.13) 0%,
+    rgb(224 169 109 / 0.04) 34%,
+    rgb(224 169 109 / 0) 62%
+  );
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+
+/* ---------------------------------------------------------------------------
+   Editorial rules.
+
+   A hairline that carries the accent at its start, used to head sections and
+   project rows. It replaces the bordered card as the device that separates
+   things, which is the whole point of the V3 layout: rhythm and rules instead
+   of boxes.
+--------------------------------------------------------------------------- */
+
+.rule-accent {
+  position: relative;
+  border-top: 1px solid var(--border);
+}
+
+.rule-accent::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 3.5rem;
+  height: 1px;
+  background: var(--accent);
+}
+
