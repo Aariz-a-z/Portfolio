@@ -107,7 +107,10 @@ export const projects: Project[] = [
       'Interactive radar dashboard',
     ],
     stack: ['Python', 'Streamlit', 'Sentence-Transformers', 'PyMuPDF', 'Plotly'],
-    links: { github: 'https://github.com/Aariz-a-z/AI-RESUME-ANALYZER' },
+    links: {
+      github: 'https://github.com/Aariz-a-z/AI-RESUME-ANALYZER',
+      demo: 'https://aariz-ai-resume-analyzer.streamlit.app',
+    },
     gallery: [
       {
         src: '/media/resume-analyzer/compare-before.webp',
