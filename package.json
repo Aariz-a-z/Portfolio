@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
+    "build:resume": "node scripts/build-resume.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "scan:secrets": "node scripts/scan-secrets.mjs"
   },
