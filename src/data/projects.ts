@@ -146,7 +146,7 @@ export const projects: Project[] = [
     // this is ongoing rather than completed.
     status: 'ongoing',
     statusNote:
-      'Phases 1 to 6 are implemented and tested. The language-model provider is an interface that currently reports no model configured; long-term memory and an installer are not built.',
+      'Actively built and tested, and not finished: the language-model provider is an interface that currently reports no model configured, and long-term memory and an installer are not built.',
     summary:
       'A Windows desktop agent that takes a spoken or typed instruction, checks it against a permission and risk model, and only then acts — with speech recognition that runs entirely on the machine.',
     problem:
@@ -168,7 +168,7 @@ export const projects: Project[] = [
       'Per-capability permission switches',
       'Low / medium / high risk grading',
       'Sandboxed filesystem access',
-      'SQLite audit trail',
+      'Audit trail of every attempt',
     ],
     stack: [
       'Python',
@@ -179,6 +179,21 @@ export const projects: Project[] = [
       'pytest',
     ],
     links: { github: 'https://github.com/Aariz-a-z/aarma-desktop-agent' },
+    media: {
+      src: '/media/aarma/activity.webp',
+      alt: "AARMA's Activity page: a table of every action attempted, each row showing the time, the action name such as open_application or create_reminder, a risk grade of Low or Medium, whether the command arrived by wake word, GUI or text, whether it was allowed, and the outcome.",
+      width: 1909,
+      height: 997,
+    },
+    gallery: [
+      {
+        src: '/media/aarma/conversation.webp',
+        alt: "AARMA's Conversation page: a dark desktop window with a sidebar listing Conversation, Activity, Permissions, Settings and About, a header showing the assistant idle, set to English, using the male_calm voice and online, and a command box with suggested commands beneath it.",
+        caption: 'The agent at rest, before a command.',
+        width: 1576,
+        height: 916,
+      },
+    ],
     flow: [
       { term: 'Listen', note: 'Wake word, then on-device speech' },
       { term: 'Understand', note: 'Intent, not raw text' },
