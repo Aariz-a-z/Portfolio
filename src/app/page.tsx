@@ -25,7 +25,7 @@ export default function HomePage() {
         id="work"
         index="01"
         title="Featured work"
-        intro="The two projects I would want to be asked about."
+        intro="The projects I would want to be asked about."
       >
         <ProjectsSection tier="flagship" />
       </Section>

@@ -135,6 +135,57 @@ export const projects: Project[] = [
   },
 
   {
+    slug: 'aarma',
+    title: 'AARMA — Voice-Controlled Desktop Agent',
+    tier: 'flagship',
+    // Phases 1-6 of a phased build. The language-model provider, long-term
+    // memory and the installer are not implemented, and the README says so, so
+    // this is ongoing rather than completed.
+    status: 'ongoing',
+    statusNote:
+      'Phases 1 to 6 are implemented and tested. The language-model provider is an interface that currently reports no model configured; long-term memory and an installer are not built.',
+    summary:
+      'A Windows desktop agent that takes a spoken or typed instruction, checks it against a permission and risk model, and only then acts — with speech recognition that runs entirely on the machine.',
+    problem:
+      'A desktop assistant that can open applications, move files and control windows is a security problem before it is a convenience. If it executes whatever a language model proposes, a misheard phrase or a bad suggestion becomes a deleted folder. Most assistants also send recorded audio to a server, so using one means trusting someone else with everything said near the microphone.',
+    approach:
+      'Put a hard boundary between understanding and acting. Everything above the line — wake word, speech-to-text, intent parsing — only ever produces a structured request; nothing below the line trusts it. The request is then checked against a registry of named actions, a typed parameter schema, a per-capability permission switch and a risk grade before anything runs, and a high-risk action always has to be confirmed. Speech recognition runs locally so audio never leaves the machine.',
+    implementation: [
+      'A command passes through registry lookup, typed parameter validation, a permission check, a connectivity check and a pre-check before execution. An unregistered action name, an undeclared parameter or a missing permission is refused and audited rather than attempted.',
+      'Actions are grouped by capability across twenty modules — filesystem, browser, applications, desktop and window control, keyboard and mouse, media, power, reminders, calendar, email, screenshots, weather and health — each registered with its own parameter schema, permission list and risk grade.',
+      'Speech recognition runs on-device through faster-whisper, so audio is never uploaded and never written to disk. A length-aware confidence gate stops short commands being rejected for being short, and the raw recogniser output is shown before validation so a refusal can be explained.',
+      'Filesystem actions are confined to the user’s own content folders, resolved through the Windows known-folder API rather than by string matching on paths.',
+      'An optional passphrase uses PBKDF2-HMAC-SHA256 from the standard library, and secrets are redacted from logs. State lives in SQLite behind a migration ladder: the conversation transcript, the action audit trail and every permission decision.',
+      'The interface is a PySide6 dashboard with dark and light themes generated from one set of design tokens, alongside a full text mode. Interface, input and output languages are configured independently across a ten-language catalogue.',
+    ],
+    features: [
+      'Spoken or typed commands',
+      'Two-stage wake word',
+      'On-device speech recognition',
+      'Per-capability permission switches',
+      'Low / medium / high risk grading',
+      'Sandboxed filesystem access',
+      'SQLite audit trail',
+    ],
+    stack: [
+      'Python',
+      'PySide6 (Qt 6)',
+      'faster-whisper',
+      'SQLite',
+      'edge-tts',
+      'pytest',
+    ],
+    links: { github: 'https://github.com/Aariz-a-z/aarma-desktop-agent' },
+    flow: [
+      { term: 'Listen', note: 'Wake word, then on-device speech' },
+      { term: 'Understand', note: 'Intent, not raw text' },
+      { term: 'Check', note: 'Registry, schema, permission' },
+      { term: 'Grade', note: 'High risk needs confirmation' },
+      { term: 'Act', note: 'Sandboxed, and audited' },
+    ],
+  },
+
+  {
     slug: 'sales-forecasting',
     title: 'Sales Forecasting',
     tier: 'standard',
