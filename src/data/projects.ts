@@ -77,6 +77,13 @@ export const projects: Project[] = [
   {
     slug: 'resume-analyzer',
     title: 'AI Resume Analyzer',
+    flow: [
+      { term: 'PDF', note: 'Uploaded resume' },
+      { term: 'Extract', note: 'PyMuPDF, page by page' },
+      { term: 'Embed', note: 'all-MiniLM-L6-v2' },
+      { term: 'Compare', note: 'Cosine against the posting' },
+      { term: 'Gap', note: 'Named skills, not a score' },
+    ],
     tier: 'flagship',
     status: 'completed',
     summary:
@@ -101,6 +108,24 @@ export const projects: Project[] = [
     ],
     stack: ['Python', 'Streamlit', 'Sentence-Transformers', 'PyMuPDF', 'Plotly'],
     links: { github: 'https://github.com/Aariz-a-z/AI-RESUME-ANALYZER' },
+    gallery: [
+      {
+        src: '/media/resume-analyzer/compare-before.webp',
+        alt: 'Two printed documents lying side by side on a dark desk, a resume on the left and a job posting on the right, both unmarked.',
+        caption:
+          'Illustration, not a screen capture: the two inputs the analyzer compares.',
+        width: 1600,
+        height: 1000,
+      },
+      {
+        src: '/media/resume-analyzer/compare-after.webp',
+        alt: 'The same two documents, with the requirements present in both now washed in amber on each page while the requirements the resume never mentions are left unmarked.',
+        caption:
+          'Illustration, not a screen capture: matched requirements lit on both pages; what is left unlit on the posting is the skill gap.',
+        width: 1600,
+        height: 1000,
+      },
+    ],
     media: {
       src: '/media/resume-analyzer/dashboard.webp',
       alt: 'The Resume Analyzer dashboard after an example run: an ATS check reporting 517 words extracted, a semantic match score, a count of missing skills, a skill-gap list naming Data Structures and Algorithms and Amazon Web Services, and a radar chart comparing required skills against those found.',

@@ -75,6 +75,35 @@ export function FeaturedProject({
         </dl>
       ) : null}
 
+      {/*
+        The pipeline as a ruled sequence.
+
+        Driven entirely by `project.flow`, so a project that supplies stages
+        gets the rail and one that does not is unchanged — adding a ninth
+        project still touches no component. The accent ticks line up across the
+        row, which is what makes five separate items read as one sequence
+        without drawing a single arrow.
+      */}
+      {project.flow && project.flow.length > 0 ? (
+        <ol className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 lg:grid-cols-5">
+          {project.flow.map((step, i) => (
+            <li key={step.term} className="flex flex-col gap-2">
+              <span className="relative block border-t border-border pt-3">
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-[-1px] h-px w-5 bg-accent"
+                />
+                <span className="t-mono text-text-muted">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </span>
+              <span className="t-h3 text-text">{step.term}</span>
+              <span className="t-small text-text-muted">{step.note}</span>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
         <div
           className={`order-2 lg:order-none lg:col-span-7 ${
@@ -86,6 +115,24 @@ export function FeaturedProject({
             label={project.title}
             priority={priority}
           />
+
+          {/*
+            Supporting images. Each carries its own caption, because these sit
+            next to a real screenshot and a reader has to be able to tell which
+            is evidence and which is illustration.
+          */}
+          {project.gallery && project.gallery.length > 0 ? (
+            <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {project.gallery.map((item) => (
+                <li key={item.src} className="flex flex-col gap-2">
+                  <MediaFrame media={item} label={project.title} />
+                  {item.caption ? (
+                    <p className="t-small text-text-muted">{item.caption}</p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         <div
@@ -118,7 +165,7 @@ export function FeaturedProject({
             </div>
           )}
 
-          <ProjectDetail project={project} />
+          <ProjectDetail project={project} open />
 
           <ProjectLinks
             links={project.links}

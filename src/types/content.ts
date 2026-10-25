@@ -27,6 +27,8 @@ export interface Evaluation {
 }
 
 export interface ProjectMedia {
+  /** Shown under the image. Use it to say what the image IS, not what it shows. */
+  caption?: string;
   /**
    * 'image' — `src` is a file path.
    * 'diagram' — `src` names a drawn diagram in the diagram registry, which
@@ -75,6 +77,22 @@ export interface Project {
    * measurement — see TRUTH-LEDGER.md. A figure with no origin does not go here.
    */
   facts?: { value: string; label: string }[];
+  /**
+   * The project's pipeline as a short rail of stages.
+   *
+   * Set it and the flagship layout draws a ruled sequence above the split. Each
+   * stage must correspond to something the implementation actually does — the
+   * rail is a summary of `implementation`, never an aspiration.
+   */
+  flow?: { term: string; note: string }[];
+  /**
+   * Further images shown beneath the primary media.
+   *
+   * Every entry needs real alt text describing what is actually depicted — the
+   * gallery is evidence, so an image whose caption cannot be written honestly
+   * does not belong in it.
+   */
+  gallery?: ProjectMedia[];
 }
 
 export interface SkillItem {
