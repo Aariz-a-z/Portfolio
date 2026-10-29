@@ -80,8 +80,8 @@ export const projects: Project[] = [
     flow: [
       { term: 'PDF', note: 'Uploaded resume' },
       { term: 'Extract', note: 'PyMuPDF, page by page' },
-      { term: 'Embed', note: 'all-MiniLM-L6-v2' },
-      { term: 'Compare', note: 'Cosine against the posting' },
+      { term: 'Chunk', note: '45 words, 12 overlapping' },
+      { term: 'Compare', note: 'Per requirement, best chunk' },
       { term: 'Gap', note: 'Named skills, not a score' },
     ],
     tier: 'flagship',
@@ -91,17 +91,17 @@ export const projects: Project[] = [
     problem:
       'Keyword matching misses the point. A resume that says "built predictive models" and a posting that asks for "machine learning" describe the same work in different words, and a keyword check scores that as a miss. Separately, an applicant has no way to tell whether an applicant tracking system can read their PDF at all.',
     approach:
-      'Compare meaning instead of keywords. Encode the resume and the job description with a sentence-transformer model and score the pair by cosine similarity. Run a second, separate pass over a small alias ontology to work out which named skills the posting asks for and the resume does not mention, so the gap is specific rather than a single opaque score.',
+      'Compare meaning instead of keywords, but not by embedding each document whole. all-MiniLM-L6-v2 truncates at 256 word pieces and a real two-page resume runs eight hundred to fifteen hundred words, so a document-level embedding never sees most of it — and squeezing two long documents into one vector each collapses every score into a narrow band where a strong candidate and a mediocre one are indistinguishable. So the posting is broken into individual requirements and the resume into overlapping chunks, and each requirement is matched against its best-matching chunk. Every input stays under the token limit, and each requirement gets its own score alongside the resume line that justifies it.',
     implementation: [
       'Text is extracted page by page from the uploaded PDF with PyMuPDF, then normalised by a regex pass that strips punctuation and collapses whitespace before anything is embedded.',
-      'Resume and job description are encoded with all-MiniLM-L6-v2 and scored by cosine similarity. The model is loaded once behind a cache rather than on every interaction.',
+      'The resume is split into overlapping forty-five-word chunks and the posting into at most twenty-four requirements, each requirement scored against its best-matching chunk with all-MiniLM-L6-v2. A cosine of 0.50 or above counts as evidenced and 0.34 to 0.50 as related but thin; the final percentage maps 0.10 to no credit and 0.55 to full credit, because real sentence-to-sentence matches top out near 0.58 and a higher ceiling would make even a perfect candidate look mediocre. The overall figure weights explicit skill coverage at 0.55 against semantic requirement coverage at 0.45, and a stated nice-to-have counts for forty per cent of a must-have. The thresholds are calibrated against a separate evaluation script rather than chosen by eye, and the model is loaded once behind a cache.',
       'A word-count check on the extracted text flags PDFs an applicant tracking system is likely to mis-parse — the failure where a resume looks fine on screen but yields almost no extractable text.',
       'Skill matching resolves aliases so that "ml", "machine learning" and "predictive modeling" collapse to one skill, matched on word boundaries so that partial words cannot produce false hits.',
       'The resulting gap is drawn as a Plotly radar chart of covered against required skills, and each missing skill is paired with a link to a learning resource.',
     ],
     features: [
       'PDF upload and text extraction',
-      'Semantic match score',
+      'Per-requirement match scoring',
       'ATS readability check',
       'Skill-gap analysis',
       'Interactive radar dashboard',
