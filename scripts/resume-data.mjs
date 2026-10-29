@@ -18,10 +18,10 @@
 
 export const profile = {
   name: 'Aariz Khan',
-  title: 'AI Software Engineer',
+  title: 'Artificial Intelligence & Machine Learning Engineer',
   subtitle: 'B.Tech, Artificial Intelligence & Machine Learning — CMR University, Bengaluru',
   email: 'pathanaarizkhan021@gmail.com',
-  phone: '6301497997',
+  phone: '+91 6301497997',
   portfolio: 'portfolio-wheat-three-902gdwiuq2.vercel.app',
   portfolioHref: 'https://portfolio-wheat-three-902gdwiuq2.vercel.app/',
   github: 'github.com/Aariz-a-z',
@@ -37,10 +37,11 @@ export const profile = {
  * will look.
  */
 export const summary =
-  'Builds AI systems end to end. A document chatbot running in production, a ' +
-  'voice-controlled desktop agent with 103 actions, and machine learning models trained ' +
-  'and tested on public datasets. Works in Python and TypeScript across NLP, embeddings, ' +
-  'vector search and REST APIs.';
+  'Artificial intelligence and machine learning engineer who designs and ships complete ' +
+  'AI systems. Three live web applications — retrieval-augmented chat, automated report ' +
+  'analysis and semantic resume matching — alongside a voice-controlled desktop agent ' +
+  'covered by 1,932 tests. Works across the full path from data preparation and model ' +
+  'evaluation to REST APIs and deployment.';
 
 export const projects = [
   {
@@ -55,8 +56,53 @@ export const projects = [
       'Answers questions from your own documents and shows which sources it used.',
       'Reads 10 file types including scanned PDFs, splits them into chunks, and stores ' +
         'them as embeddings in PostgreSQL with pgvector.',
-      'Searches by meaning and by keyword together, then reranks the results. Found the ' +
-        'right passage 96.2% of the time across 14 test runs.',
+      'Searches by meaning and keyword together, then reranks. Found the right passage ' +
+        '96.2% of the time across 14 test runs.',
+    ],
+  },
+  {
+    /**
+     * Deployed and serving: projectrevive-ai.vercel.app returns 200 with the
+     * real product behind it. The repository README still opens "feature-
+     * complete, not deployed", which is now out of date — worth fixing there,
+     * since a recruiter reads the README right after the resume link.
+     */
+    title: 'ProjectRevive AI — Report Analysis & Recommendations',
+    badge: 'Live',
+    stack: 'Python · FastAPI · Next.js · TypeScript',
+    links: [
+      { label: 'projectrevive-ai.vercel.app', href: 'https://projectrevive-ai.vercel.app' },
+      {
+        label: 'github.com/Aariz-a-z/projectrevive-ai',
+        href: 'https://github.com/Aariz-a-z/projectrevive-ai',
+      },
+    ],
+    bullets: [
+      'Reads an AI/ML project report and finds what is weak in it, tracing every finding ' +
+        'back to the page it came from.',
+      'Keeps what the report says separate from what the system inferred, dropping any ' +
+        'finding whose quote cannot be verified.',
+      'Combines 14 deterministic rules with a model to rank fixes from a catalogue of 22 ' +
+        'improvements, behind Argon2id hashing and two layers of rate limiting.',
+    ],
+  },
+  {
+    title: 'AI Resume Analyzer',
+    badge: 'Live',
+    stack: 'Python · Sentence-Transformers · Streamlit · PyMuPDF',
+    links: [
+      {
+        label: 'aariz-ai-resume-analyzer.streamlit.app',
+        href: 'https://aariz-ai-resume-analyzer.streamlit.app/',
+      },
+      {
+        label: 'github.com/Aariz-a-z/AI-RESUME-ANALYZER',
+        href: 'https://github.com/Aariz-a-z/AI-RESUME-ANALYZER',
+      },
+    ],
+    bullets: [
+      'Compares a resume with a job description and scores how well they match, using ' +
+        'sentence embeddings rather than keyword matching.',
     ],
   },
   {
@@ -80,26 +126,6 @@ export const projects = [
         'before they run.',
       'Speech recognition runs on the computer, so audio never leaves the machine. ' +
         'Covered by 1,932 tests.',
-    ],
-  },
-  {
-    title: 'AI Resume Analyzer',
-    badge: 'Live',
-    stack: 'Python · Sentence-Transformers · Streamlit · PyMuPDF',
-    links: [
-      {
-        label: 'aariz-ai-resume-analyzer.streamlit.app',
-        href: 'https://aariz-ai-resume-analyzer.streamlit.app/',
-      },
-      {
-        label: 'github.com/Aariz-a-z/AI-RESUME-ANALYZER',
-        href: 'https://github.com/Aariz-a-z/AI-RESUME-ANALYZER',
-      },
-    ],
-    bullets: [
-      'Compares a resume with a job description and scores how well they match, using ' +
-        'sentence embeddings rather than keyword matching.',
-      'Lists the skills the job asks for that the resume never mentions.',
     ],
   },
 ];
@@ -154,7 +180,7 @@ export const skills = [
       'speech recognition (Whisper)',
   },
   {
-    label: 'Data & Platforms',
+    label: 'Data Science & Platforms',
     items:
       'pandas, NumPy, exploratory data analysis, data cleaning, Matplotlib, seaborn, ' +
       'Plotly, Linux, Kubernetes, REST APIs, PostgreSQL, MongoDB, SQLite, Supabase',
@@ -163,7 +189,32 @@ export const skills = [
     label: 'Languages & Tools',
     items:
       'Python, TypeScript, SQL, Git, GitHub, Jupyter, Google Colab, VS Code, pytest, ' +
-      'Streamlit, PySide6 (Qt), Next.js, React',
+      'FastAPI, Streamlit, PySide6 (Qt), Next.js, React',
+  },
+];
+
+/**
+ * One sentence, covering the whole loop Aariz described: repository and
+ * environment setup, task design, reference implementation, test authoring,
+ * evaluation runs, quality review and PR delivery.
+ *
+ * The internal codename (Project Dynamo) is left out on purpose — it means
+ * nothing outside Handshake, and the space buys concrete verbs instead. The
+ * second engagement he mentioned, Project Octahedron, is not described here
+ * because he has not said what it involved.
+ */
+export const experience = [
+  {
+    role: 'AI Trainer',
+    company: 'Handshake AI',
+    location: 'Remote',
+    dates: 'Jul 2026 - Sep 2026',
+    bullets: [
+      'Created and evaluated software-engineering benchmark tasks for AI coding agents — ' +
+        'authoring each problem, its reference solution and the tests that verify it, then ' +
+        'running evaluations and reviewing every task for difficulty, fairness and ' +
+        'correctness, delivered through GitHub pull-request workflows.',
+    ],
   },
 ];
 

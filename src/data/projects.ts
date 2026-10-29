@@ -261,6 +261,22 @@ export const projects: Project[] = [
       github: 'https://github.com/Aariz-a-z/projectrevive-ai',
       demo: 'https://projectrevive-ai.vercel.app',
     },
+    media: {
+      src: '/media/projectrevive/landing.webp',
+      alt: "ProjectRevive AI's landing page, headed “Understand any project report. With receipts.”, beside a sample analysis showing a detected project title, tags for computer vision, CNN on page 3, TensorFlow on page 3 and accuracy on page 4, an evidence-coverage bar reading sixteen stated against one inferred, and a quoted line from page 3.",
+      width: 1849,
+      height: 895,
+    },
+    gallery: [
+      {
+        src: '/media/projectrevive/dashboard.webp',
+        alt: 'The signed-in dashboard: a drop area for a PDF or DOCX processed in memory and never written to disk, a list of previous analyses, and a banner stating that no language model is configured so profiles come from keyword matching while the rule-based weakness detection still runs in full.',
+        caption:
+          'The deployed instance runs without a model key, so it labels itself: analyses are tagged mock and the banner says which parts still work.',
+        width: 1846,
+        height: 892,
+      },
+    ],
   },
 
   {

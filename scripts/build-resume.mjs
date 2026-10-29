@@ -33,6 +33,7 @@ import {
   projects,
   alsoBuilt,
   skills,
+  experience,
   education,
   languages,
 } from './resume-data.mjs';
@@ -66,20 +67,38 @@ const link = (label, href) =>
  *
  * Inter is licensed SIL OFL 1.1, which permits embedding and redistribution.
  */
-const FONT_PATH = resolve(dirname(fileURLToPath(import.meta.url)), 'fonts/inter-latin-var.woff2');
+const FONT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), 'fonts');
 
-const fontFace = existsSync(FONT_PATH)
-  ? `@font-face {
+/**
+ * Static weights, not the variable file, and the reason is an ATS audit result
+ * rather than taste.
+ *
+ * Printing the variable Inter made Chrome's PDF backend write all 21 fonts as
+ * Type3 — glyph-drawing procedures rather than real text fonts. The text layer
+ * still extracted here, but Type3 is a known parsing hazard for applicant
+ * tracking systems, and a resume that a parser mishandles never reaches a
+ * person. Static instances come out as subsetted TrueType (Type0), which is
+ * what every parser expects. The audit script asserts this.
+ *
+ * Only these four weights exist, so the stylesheet must ask for exactly them:
+ * a request for 650 would make Chrome synthesise a faux-bold instead.
+ */
+const FONT_WEIGHTS = [400, 500, 600, 700];
+
+const fontFace = FONT_WEIGHTS.map((weight) => {
+  const file = resolve(FONT_DIR, `inter-${weight}.woff`);
+  if (!existsSync(file)) return '';
+  return `@font-face {
       font-family: "Inter";
       font-style: normal;
-      font-weight: 100 900;
+      font-weight: ${weight};
       font-display: block;
-      src: url(data:font/woff2;base64,${readFileSync(FONT_PATH).toString('base64')}) format("woff2");
-    }`
-  : '';
+      src: url(data:font/woff;base64,${readFileSync(file).toString('base64')}) format("woff");
+    }`;
+}).join('\n');
 
 const cssRest = `
-  @page { size: A4; margin: 14mm 13mm 12mm 13mm; }
+  @page { size: A4; margin: 10mm 13mm 7mm 13mm; }
 
   :root {
     --ink:    #16181d;
@@ -96,8 +115,8 @@ const cssRest = `
   body {
     margin: 0;
     font-family: Inter, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-    font-size: 9.3pt;
-    line-height: 1.5;
+    font-size: 8.6pt;
+    line-height: 1.4;
     color: var(--body);
     font-feature-settings: "kern" 1, "liga" 1;
     -webkit-font-smoothing: antialiased;
@@ -108,8 +127,8 @@ const cssRest = `
   /* ---- Header ------------------------------------------------------- */
 
   .name {
-    font-size: 22pt;
-    font-weight: 650;
+    font-size: 20pt;
+    font-weight: 600;
     letter-spacing: -0.021em;
     color: var(--ink);
     line-height: 1.05;
@@ -118,7 +137,7 @@ const cssRest = `
 
   .title {
     font-size: 9.4pt;
-    font-weight: 550;
+    font-weight: 600;
     letter-spacing: 0.005em;
     color: var(--ink);
     margin: 3.5pt 0 0;
@@ -131,7 +150,7 @@ const cssRest = `
   }
 
   .contact {
-    font-size: 8.2pt;
+    font-size: 7.6pt;
     color: var(--muted);
     margin: 5pt 0 0;
     display: flex;
@@ -139,28 +158,33 @@ const cssRest = `
     gap: 0 6pt;
   }
 
-  .contact span::after {
+  .contact > span::after {
     content: "·";
     margin-left: 6pt;
     color: var(--rule);
   }
 
-  .contact span:last-child::after { content: none; }
+  .contact > span:last-child::after { content: none; }
 
   .contact-web { margin-top: 1.4pt; }
+
+  .field-label {
+    font-weight: 600;
+    color: var(--ink);
+  }
 
   .contact a { border-bottom: 0.4pt solid var(--rule); }
 
   .header-rule {
     border: 0;
     border-top: 1pt solid var(--ink);
-    margin: 6.5pt 0 0;
+    margin: 5.5pt 0 0;
   }
 
   /* ---- Sections ----------------------------------------------------- */
 
   .summary {
-    margin: 6.5pt 0 0;
+    margin: 5.5pt 0 0;
     color: var(--body);
   }
 
@@ -170,16 +194,16 @@ const cssRest = `
     letter-spacing: 0.115em;
     text-transform: uppercase;
     color: var(--ink);
-    margin: 12pt 0 0;
-    padding: 0 0 3pt;
+    margin: 7.8pt 0 0;
+    padding: 0 0 2.3pt;
     border-bottom: 0.5pt solid var(--rule);
   }
 
-  section:first-of-type h2 { margin-top: 10pt; }
+  section:first-of-type h2 { margin-top: 8.5pt; }
 
   /* ---- Projects ----------------------------------------------------- */
 
-  .project { margin-top: 9pt; break-inside: avoid; }
+  .project { margin-top: 5.8pt; break-inside: avoid; }
   .project:first-of-type { margin-top: 5pt; }
 
   .project-head {
@@ -189,23 +213,24 @@ const cssRest = `
   }
 
   .project-title {
-    font-size: 10.6pt;
-    font-weight: 650;
+    font-size: 9.9pt;
+    font-weight: 600;
     letter-spacing: -0.008em;
     color: var(--ink);
   }
 
   .badge {
     font-size: 6.6pt;
-    font-weight: 650;
+    font-weight: 600;
     letter-spacing: 0.09em;
     text-transform: uppercase;
     color: #ffffff;
     background: var(--accent);
     border-radius: 2pt;
     padding: 1.2pt 3.6pt 1.4pt;
-    position: relative;
-    top: -0.6pt;
+    /* vertical-align rather than a positioned nudge, for the same
+       reading-order reason as the list items above. */
+    vertical-align: 0.6pt;
   }
 
   .metric {
@@ -238,21 +263,23 @@ const cssRest = `
     list-style: none;
   }
 
+  /**
+   * Positioned elements are painted after normal flow, so a relatively
+   * positioned list item made Chrome write every bullet into the content
+   * stream after the whole rest of the page. Read linearly — which is how an
+   * applicant tracking system reads — the bullets arrived in a blob at the
+   * end, detached from the projects they describe. A hanging indent built
+   * from text-indent keeps the same appearance entirely in normal flow.
+   */
   li {
-    position: relative;
     padding-left: 9pt;
-    margin-top: 4pt;
+    text-indent: -9pt;
+    margin-top: 2.1pt;
   }
 
   li::before {
-    content: "";
-    position: absolute;
-    left: 1.5pt;
-    top: 4.6pt;
-    width: 2.6pt;
-    height: 2.6pt;
-    border-radius: 50%;
-    background: #a8adb6;
+    content: "• ";
+    color: #a8adb6;
   }
 
   /* ---- Compact rows -------------------------------------------------- */
@@ -260,13 +287,13 @@ const cssRest = `
   .row {
     display: flex;
     gap: 7pt;
-    margin-top: 4pt;
+    margin-top: 3.3pt;
     break-inside: avoid;
   }
 
   .row-label {
     flex: 0 0 82pt;
-    font-weight: 650;
+    font-weight: 600;
     color: var(--ink);
   }
 
@@ -283,11 +310,11 @@ const cssRest = `
     display: flex;
     align-items: baseline;
     gap: 7pt;
-    margin-top: 2.6pt;
+    margin-top: 2.2pt;
   }
 
   .edu-main { flex: 1; }
-  .edu-credential { font-weight: 650; color: var(--ink); }
+  .edu-credential { font-weight: 600; color: var(--ink); }
   .edu-institution { color: var(--muted); }
   .edu-side { color: var(--muted); white-space: nowrap; text-align: right; }
   .edu-score { font-weight: 600; color: var(--ink); }
@@ -303,16 +330,27 @@ const css = fontFace + cssRest;
  * like an accident; splitting it where the meaning splits — how to reach him,
  * then where to read his work — looks like a decision.
  */
+/**
+ * Each contact value is labelled with what it is.
+ *
+ * A bare row of five values asks both the reader and the parser to infer which
+ * is which from shape alone. Naming the field removes the guess, and an
+ * applicant tracking system looking for "Email" or "LinkedIn" finds a literal
+ * label next to the value rather than having to pattern-match a URL.
+ */
 function renderHead() {
+  const field = (label, value) =>
+    `<span><span class="field-label">${esc(label)}</span>&nbsp;${value}</span>`;
+
   const reach = [
-    `<span>${link(profile.email, `mailto:${profile.email}`)}</span>`,
-    `<span>${esc(profile.phone)}</span>`,
+    field('Email', link(profile.email, `mailto:${profile.email}`)),
+    field('Phone', esc(profile.phone)),
   ].join('');
 
   const web = [
-    `<span>${link(profile.portfolio, profile.portfolioHref)}</span>`,
-    `<span>${link(profile.github, profile.githubHref)}</span>`,
-    `<span>${link(profile.linkedin, profile.linkedinHref)}</span>`,
+    field('Portfolio', link(profile.portfolio, profile.portfolioHref)),
+    field('GitHub', link(profile.github, profile.githubHref)),
+    field('LinkedIn', link(profile.linkedin, profile.linkedinHref)),
   ].join('');
 
   return `
@@ -324,7 +362,10 @@ function renderHead() {
       <div class="contact contact-web">${web}</div>
       <hr class="header-rule" />
     </header>
+    <section>
+    <h2>Summary</h2>
     <p class="summary">${esc(summary)}</p>
+  </section>
   `;
 }
 
@@ -396,6 +437,24 @@ function renderEducation() {
     .join('');
 }
 
+function renderExperience() {
+  return experience
+    .map((e) => {
+      const bullets = e.bullets.length
+        ? `<ul>${e.bullets.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>`
+        : '';
+      return `
+      <div class="edu">
+        <div class="edu-main">
+          <span class="edu-credential">${esc(e.role)}</span> ·
+          <span class="edu-institution">${esc(e.company)} — ${esc(e.location)}</span>
+        </div>
+        <div class="edu-side">${esc(e.dates)}</div>
+      </div>${bullets}`;
+    })
+    .join('');
+}
+
 function renderHtml() {
   return `<!doctype html>
 <html lang="en">
@@ -408,14 +467,19 @@ function renderHtml() {
   ${renderHead()}
 
   <section>
+    <h2>Technical Skills</h2>
+    ${renderSkills()}
+  </section>
+
+  <section>
     <h2>Projects</h2>
     ${projects.map(renderProject).join('')}
     ${renderAlsoBuilt()}
   </section>
 
   <section>
-    <h2>Technical Skills</h2>
-    ${renderSkills()}
+    <h2>Experience</h2>
+    ${renderExperience()}
   </section>
 
   <section>
@@ -439,7 +503,8 @@ function renderHtml() {
  */
 const MUST_EXTRACT = [
   'Aariz Khan',
-  'AI Software Engineer',
+  'Artificial Intelligence & Machine Learning Engineer',
+  'Handshake AI',
   // Project metrics, each traceable to a recorded run or README.
   '96.2%',
   '103 actions',
@@ -456,6 +521,8 @@ const MUST_EXTRACT = [
   'PostgreSQL',
   'MongoDB',
   'REST APIs',
+  'FastAPI',
+  'projectrevive-ai.vercel.app',
   'CGPA 8.8',
   profile.email,
   profile.phone,
@@ -499,7 +566,7 @@ async function render(port, htmlPath, outPath) {
   if (!usedInter.result.value) {
     throw new Error(
       'Inter did not load; the PDF would render in a fallback face. ' +
-        `Expected the vendored font at ${FONT_PATH}`,
+        `Expected vendored Inter weights in ${FONT_DIR}`,
     );
   }
   console.log('font: Inter (vendored, inlined)');
@@ -537,10 +604,11 @@ doc = fitz.open(path)
 doc.set_metadata({
     "title": sys.argv[2] + " - Resume",
     "author": sys.argv[2],
-    "subject": "Data Science and Machine Learning resume",
+    "subject": "Artificial Intelligence and Machine Learning Engineer resume",
     "keywords": (
-        "data science, machine learning, NLP, retrieval-augmented generation, "
-        "embeddings, pgvector, Python, scikit-learn, pandas, TypeScript"
+        "artificial intelligence, machine learning, data science, NLP, "
+        "retrieval-augmented generation, embeddings, pgvector, PyTorch, "
+        "scikit-learn, Python, FastAPI, REST API, PostgreSQL, TypeScript"
     ),
     "creator": "",
     "producer": "",

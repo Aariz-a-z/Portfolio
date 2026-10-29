@@ -2,7 +2,10 @@ import { education } from '@/data/education';
 
 /**
  * Present and accurate, and visually secondary to the projects by design —
- * one quiet row rather than a card that competes with the work above it.
+ * quiet ruled rows rather than cards that compete with the work above them.
+ *
+ * An entry with no start year renders just its end year. A school leaving
+ * certificate has one date, and "–2021" is not a date range.
  */
 export function EducationSection() {
   return (
@@ -21,7 +24,8 @@ export function EducationSection() {
             </p>
           </div>
           <p className="t-mono whitespace-nowrap text-text-muted">
-            {entry.start}–{entry.end} · {entry.score.label} {entry.score.value}
+            {entry.start ? `${entry.start}–${entry.end}` : entry.end} ·{' '}
+            {entry.score.label} {entry.score.value}
           </p>
         </li>
       ))}

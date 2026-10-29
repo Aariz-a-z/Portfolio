@@ -46,7 +46,7 @@ export function ProjectsSection({ tier }: { tier: ProjectTier }) {
   // Ruled rows rather than a grid of tiles. The closing border gives the last
   // row a bottom edge without wrapping the set in a box.
   return (
-    <div className="flex flex-col border-b border-border">
+    <div className="stagger flex flex-col border-b border-border">
       {selected.map((project, index) => (
         <ProjectCard key={project.slug} project={project} index={index} />
       ))}

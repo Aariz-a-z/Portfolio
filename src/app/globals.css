@@ -313,19 +313,121 @@ summary::-webkit-details-marker {
 
 .enter {
   opacity: 1;
+  /*
+    The directional entrances start their elements offset horizontally, and a
+    section stays in that state until it is scrolled into view. Without this the
+    page scrolled sideways by the width of that offset until every section had
+    revealed — 147 overflowing elements at 360px, measured.
+
+    `clip` rather than `hidden`: hidden would turn this into a scroll container
+    and force the other axis to auto, which breaks position: sticky inside it.
+  */
 }
 
+@media (min-width: 1024px) {
+  /*
+    Only needed where the directional entrances run. They start their columns
+    offset sideways and a section stays in that state until scrolled into view,
+    so without this the page scrolled sideways by that offset. `clip` rather
+    than `hidden`: hidden would make this a scroll container and force the other
+    axis to auto, which breaks position: sticky inside it.
+  */
+  .enter {
+    overflow-x: clip;
+  }
+}
+
+/*
+  The SECTION wrapper gets a flat lift, not a 3D one, and that is a correctness
+  constraint rather than a style choice.
+
+  A section here can be several thousand pixels tall. Rotating one by even four
+  degrees about X throws its bottom edge hundreds of pixels toward the viewer,
+  and perspective then scales the whole box up accordingly — measured at 360px,
+  the wrapper's own bounding box went from 360 wide to 498, and the document
+  scrolled sideways by the difference. Depth belongs on elements whose height is
+  of the same order as the perspective distance, which is what the child rules
+  below are for.
+
+  Transform and opacity only. Both are composited, neither reflows, so the
+  entrance cannot move anything around it and CLS stays at zero.
+*/
 .enter[data-animate='pending'] {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translate3d(0, 22px, 0);
 }
 
 .enter[data-animate='in'] {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
   transition:
-    opacity 250ms cubic-bezier(0.2, 0, 0, 1),
-    transform 250ms cubic-bezier(0.2, 0, 0, 1);
+    opacity 480ms cubic-bezier(0.2, 0, 0, 1),
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   Staggered children, and entrances with a direction.
+
+   `.stagger` makes a list arrive one item at a time instead of as a block,
+   which is what lets the eye follow a sequence down the page rather than
+   meeting all of it at once. The delays are CSS `nth-child`, so no JavaScript
+   runs per item and nothing is measured.
+
+   `.from-left` and `.from-right` give the flagship's two columns opposite
+   origins, so the editorial split announces itself as the row arrives.
+
+   The ceiling is deliberate: after the eighth child the delay stops growing.
+   An eleventh item waiting most of a second to appear reads as a page that is
+   still loading, not as choreography.
+--------------------------------------------------------------------------- */
+
+.enter[data-animate='pending'] .stagger > * {
+  opacity: 0;
+  /*
+    Vertical travel only, deliberately. A negative Z here scales the element
+    down, and these rows contain buttons and links — a 44px target measured 42px
+    while the section was still pending. Depth lives on the column entrances
+    below, which contain no controls of their own.
+  */
+  transform: translate3d(0, 18px, 0);
+}
+
+.enter[data-animate='in'] .stagger > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 440ms cubic-bezier(0.2, 0, 0, 1),
+    transform 560ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.enter[data-animate='in'] .stagger > *:nth-child(1) { transition-delay: 60ms; }
+.enter[data-animate='in'] .stagger > *:nth-child(2) { transition-delay: 120ms; }
+.enter[data-animate='in'] .stagger > *:nth-child(3) { transition-delay: 180ms; }
+.enter[data-animate='in'] .stagger > *:nth-child(4) { transition-delay: 240ms; }
+.enter[data-animate='in'] .stagger > *:nth-child(5) { transition-delay: 300ms; }
+.enter[data-animate='in'] .stagger > *:nth-child(6) { transition-delay: 360ms; }
+.enter[data-animate='in'] .stagger > *:nth-child(7) { transition-delay: 420ms; }
+.enter[data-animate='in'] .stagger > *:nth-child(n + 8) { transition-delay: 480ms; }
+
+@media (min-width: 1024px) {
+  .enter[data-animate='pending'] .from-left {
+    opacity: 0;
+    transform: perspective(1100px) translate3d(-30px, 0, -46px) rotateY(5deg);
+  }
+
+  .enter[data-animate='pending'] .from-right {
+    opacity: 0;
+    transform: perspective(1100px) translate3d(30px, 0, -46px) rotateY(-5deg);
+  }
+
+  .enter[data-animate='in'] .from-left,
+  .enter[data-animate='in'] .from-right {
+    opacity: 1;
+    transform: perspective(1100px) translate3d(0, 0, 0) rotateY(0deg);
+    transition:
+      opacity 560ms cubic-bezier(0.2, 0, 0, 1),
+      transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -342,8 +444,13 @@ summary::-webkit-details-marker {
     scroll-behavior: auto;
   }
 
-  /* Never leave content mid-entrance when motion is switched off. */
-  .enter[data-animate='pending'] {
+  /* Never leave content mid-entrance when motion is switched off. Every
+     transformed variant has to be named here, not just the section wrapper:
+     a child left at opacity 0 is content a reader never receives. */
+  .enter[data-animate='pending'],
+  .enter[data-animate='pending'] .stagger > *,
+  .enter[data-animate='pending'] .from-left,
+  .enter[data-animate='pending'] .from-right {
     opacity: 1;
     transform: none;
   }

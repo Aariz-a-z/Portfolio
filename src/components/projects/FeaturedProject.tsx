@@ -85,7 +85,7 @@ export function FeaturedProject({
         without drawing a single arrow.
       */}
       {project.flow && project.flow.length > 0 ? (
-        <ol className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 lg:grid-cols-5">
+        <ol className="stagger grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 lg:grid-cols-5">
           {project.flow.map((step, i) => (
             <li key={step.term} className="flex flex-col gap-2">
               <span className="relative block border-t border-border pt-3">
@@ -107,7 +107,7 @@ export function FeaturedProject({
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
         <div
           className={`order-2 lg:order-none lg:col-span-7 ${
-            mediaFirst ? '' : 'lg:col-start-6'
+            mediaFirst ? 'from-left' : 'from-right lg:col-start-6'
           }`}
         >
           <MediaFrame
@@ -137,7 +137,7 @@ export function FeaturedProject({
 
         <div
           className={`order-1 flex flex-col gap-6 lg:order-none lg:col-span-5 lg:row-start-1 ${
-            mediaFirst ? 'lg:col-start-8' : 'lg:col-start-1'
+            mediaFirst ? 'from-right lg:col-start-8' : 'from-left lg:col-start-1'
           }`}
         >
           <EvaluationLine evaluation={project.evaluation} />

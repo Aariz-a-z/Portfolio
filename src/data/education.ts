@@ -1,5 +1,11 @@
 import type { Certification, Education } from '@/types/content';
 
+/**
+ * Every entry here matches scripts/resume-data.mjs, which is what the resume
+ * PDF is built from. The site previously carried only the degree while the
+ * resume carried all three, so a reader comparing the two found the site
+ * incomplete.
+ */
 export const education: Education[] = [
   {
     institution: 'CMR University',
@@ -9,6 +15,24 @@ export const education: Education[] = [
     start: '2023',
     end: '2027',
     score: { label: 'CGPA', value: '8.8' },
+  },
+  {
+    institution: 'Sri Chaitanya College',
+    location: 'Kadapa',
+    credential: 'Pre-University',
+    field: 'Maths, Physics, Chemistry',
+    start: '2021',
+    end: '2023',
+    score: { label: 'Score', value: '70%' },
+  },
+  {
+    institution: 'Keshava Reddy School',
+    location: 'Nandyal',
+    credential: 'Secondary School',
+    field: 'SSC',
+    start: '',
+    end: '2021',
+    score: { label: 'CGPA', value: '9.8' },
   },
 ];
 
