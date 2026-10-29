@@ -204,6 +204,66 @@ export const projects: Project[] = [
   },
 
   {
+    slug: 'projectrevive',
+    title: 'ProjectRevive AI — Report Analysis and Improvement',
+    tier: 'flagship',
+    // The README still says "feature-complete, not deployed" and lists the live
+    // deployment as the one outstanding acceptance criterion. That criterion is
+    // now met: the application answers on its own domain, and /login, /signup
+    // and /api/health all return 200. Verified 2026-10-29.
+    status: 'completed',
+    summary:
+      'Reads an AI/ML project report and recommends improvements, labelling every finding as either stated in the document with a page citation you can open, or inferred with its reasoning shown.',
+    problem:
+      'Ask a language model to critique a project report and it will produce confident prose with no way to tell which parts came from the document and which it invented. For a review to be worth acting on, a reader has to be able to check every claim against the source — and a tool that cannot separate what it read from what it guessed cannot offer that.',
+    approach:
+      'Make provenance a property of the system rather than a promise in the prompt. Every claim carries a label: stated in the report, with a page number and a verbatim quote, or inferred, with the reasoning shown. Citations are then verified against the uploaded document, and a claim quoting text that is not on the page it names is demoted to an inference rather than quietly kept. Findings come from deterministic rules wherever rules can decide, and from the model only where they cannot.',
+    implementation: [
+      'Fourteen deterministic rules run over the structured profile and the document text. They cannot hallucinate, they need no API key, and they are the reason the whole pipeline works against a mock provider with no spend.',
+      'Recommendations come from a hybrid engine over a curated, version-controlled knowledge base of twenty-two improvements: knowledge linkage when a rule detected a problem an entry declares it fixes, and TF-IDF content similarity for ideas no rule covers — capped below anything a finding supports, so a lexical coincidence cannot outrank real evidence. Every score shows its components and weights.',
+      'Citations are checked against the uploaded file. A claim citing a page that does not exist, or quoting text absent from the page it names, has its citation rejected and is demoted with a warning rather than softened.',
+      'Prompt-injection defence treats document text as untrusted data: it is fenced, never enters the system prompt, and injection-shaped content is flagged rather than obeyed. The Anthropic provider uses structured outputs so a response is schema-validated before anything downstream sees it, and policy declines — which arrive as HTTP 200 rather than an exception — are handled as their own case.',
+      'Accounts use Argon2id hashing with a JWT session in an httpOnly cookie. An analysis belonging to another account returns 404 rather than 403, so identifiers cannot be probed. Rate limiting runs in two layers: a per-IP sliding window, and a per-account lockout with exponential backoff that a distributed attack rotating addresses cannot walk through.',
+      'Architecture diagrams are generated from a validated component graph rather than from model prose, and the backend refuses to emit a diagram it cannot parse back. The current diagram contains only components the report evidences, so a missing stage means the report never described it.',
+    ],
+    features: [
+      'PDF and DOCX, validated by content',
+      'Page-cited evidence you can open',
+      'Citations verified against the file',
+      'Deterministic rules plus model findings',
+      'Transparent recommendation scoring',
+      'Before-and-after architecture diagrams',
+      'Exportable Markdown report',
+    ],
+    stack: [
+      'Python',
+      'FastAPI',
+      'Next.js 16',
+      'TypeScript',
+      'SQLAlchemy',
+      'Tailwind CSS',
+      'Anthropic API',
+    ],
+    facts: [
+      { value: '336', label: 'tests in CI' },
+      { value: '14', label: 'deterministic rules' },
+      { value: '22', label: 'curated improvements' },
+      { value: '15/15', label: 'MVP criteria met' },
+    ],
+    flow: [
+      { term: 'Upload', note: 'PDF or DOCX, checked by content' },
+      { term: 'Extract', note: 'Text with page numbers kept' },
+      { term: 'Profile', note: 'Problem, stack, metrics, limits' },
+      { term: 'Find', note: 'Rules first, model second' },
+      { term: 'Recommend', note: 'Scored, and shown why' },
+    ],
+    links: {
+      github: 'https://github.com/Aariz-a-z/projectrevive-ai',
+      demo: 'https://projectrevive-ai.vercel.app',
+    },
+  },
+
+  {
     slug: 'sales-forecasting',
     title: 'Sales Forecasting',
     tier: 'standard',
